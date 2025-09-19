@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Our Anniversary Countdown</title>
+  <style>
+    /* Signature text */
+.signature {
+  position: absolute;
+  bottom: 20px;
+  right: 40px;
+  font-family: 'Brush Script MT', cursive;
+  font-size: 3rem;
+  color: #fff;
+  opacity: 0.85;
+  text-shadow: 0 0 10px rgba(255,255,255,0.6), 0 0 20px rgba(255,0,100,0.4);
+  transform: rotate(-5deg);
+  animation: glowPulse 3s infinite;
+}
+
+/* Glow animation */
+@keyframes glowPulse {
+  0%,100% { text-shadow: 0 0 10px rgba(255,255,255,0.6), 0 0 20px rgba(255,0,100,0.4); }
+  50% { text-shadow: 0 0 20px rgba(255,150,200,0.8), 0 0 40px rgba(255,0,100,0.6); }
+}
+
+/* Optional: watermark background */
+.watermark {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12rem;
+  font-family: 'Brush Script MT', cursive;
+  color: rgba(255,255,255,0.08);
+  pointer-events: none;
+  user-select: none;
+}
+
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #ff9ab1, #ffb347);
+      color: #fff;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      animation: wiggle 2s infinite;
+    }
+
+    #countdown {
+      display: flex;
+      gap: 20px;
+      font-size: 1.4rem;
+      font-weight: bold;
+      margin-bottom: 40px;
+      animation: wiggle 3s infinite;
+    }
+
+    .unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .number {
+      font-size: 2.2rem;
+    }
+
+    .label {
+      font-size: 0.8rem;
+      opacity: 0.85;
+    }
+
+    /* Characters */
+    .couple {
+      display: flex;
+      gap: 60px;
+      align-items: flex-end;
+      transition: gap 1s ease;
+    }
+    .character {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      animation: bounce 2s infinite;
+    }
+    .face {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      border: 3px solid #000;;
+      background: #ffe1ec;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: #ff4d6d;
+      z-index: 2;
+    }
+    .body {
+      width: 100px;
+      height: 120px;
+      background: #333;
+      border-radius: 50% 50% 20% 20%;
+      margin-top: -20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .hand {
+      position: absolute;
+      bottom: 30px;
+      width: 20px;
+      height: 20px;
+      background: #ff4d6d;
+      border-radius: 50%;
+    }
+    .left-hand { left: 80px; }
+    .right-hand { right: 80px; }
+
+    /* Hand pulse */
+    .pulse {
+      position: absolute;
+      bottom: 30px;
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      background: rgba(255, 0, 0, 0.5);
+      animation: pulse 1.5s infinite;
+      z-index: 1;
+    }
+
+    /* Floating hearts */
+    .heart {
+      position: absolute;
+      color: #fff;
+      font-size: 20px;
+      animation: floatUp 4s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-400px) scale(1.5); opacity: 0; }
+    }
+
+    /* Celebration */
+    .celebration {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      font-size: 2rem;
+      z-index: 10;
+      animation: fadeIn 2s forwards;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(2deg); }
+      75% { transform: rotate(-2deg); }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 0.7; }
+      50% { transform: scale(1.5); opacity: 0.2; }
+      100% { transform: scale(1); opacity: 0.7; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+    <div class="signature">Şilaaaa'mmmmmmmmmmmmmmmm</div>
+<div class="watermark">Şilaaaa'mmmmmmmmmmmmmmmm</div>
+
+  <h1>💖 Counting down to our day 💖</h1>
+  <div id="countdown">
+    <div class="unit"><span class="number" id="days">0</span><span class="label">Days</span></div>
+    <div class="unit"><span class="number" id="hours">0</span><span class="label">Hours</span></div>
+    <div class="unit"><span class="number" id="minutes">0</span><span class="label">Minutes</span></div>
+    <div class="unit"><span class="number" id="seconds">0</span><span class="label">Seconds</span></div>
+  </div>
+
+  <div class="couple" id="couple">
+  <div class="character">
+    <div class="face">
+      <img src="photo_ben.jpeg" alt="Me" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
+    </div>
+    <div class="body"></div>
+    <div class="hand left-hand"></div>
+  </div>
+  <!-- <div class="pulse"></div> -->
+  <div class="character">
+    <div class="face">
+      <img src="photo_silam.jpeg" alt="Her" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
+    </div>
+    <div class="body"></div>
+    <div class="hand right-hand"></div>
+  </div>
+</div>
+
+  <div class="celebration" id="celebration">
+    🎉 Happy Anniversary, my love! 🎉
+  </div>
+
+  <script>
+    const targetDate = new Date("2026-06-22T00:00:00"); 
+    const couple = document.getElementById("couple");
+    const celebration = document.getElementById("celebration");
+
+    function updateCountdown() {
+      const now = new Date();
+      const diff = targetDate - now;
+
+      if (diff <= 0) {
+        celebration.style.display = "flex";
+        couple.style.gap = "0px"; // Hug effect
+        createConfetti();
+        clearInterval(interval);
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      document.getElementById("days").textContent = days;
+      document.getElementById("hours").textContent = hours;
+      document.getElementById("minutes").textContent = minutes;
+      document.getElementById("seconds").textContent = seconds;
+    }
+
+    let interval = setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    // Floating hearts
+    function createHeart() {
+      const heart = document.createElement("div");
+      heart.className = "heart";
+      heart.style.left = Math.random() * window.innerWidth + "px";
+      heart.style.animationDuration = 3 + Math.random() * 3 + "s";
+      heart.textContent = "❤";
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 6000);
+    }
+    setInterval(createHeart, 800);
+
+    // Celebration confetti hearts
+    function createConfetti() {
+      for (let i = 0; i < 50; i++) {
+        const heart = document.createElement("div");
+        heart.className = "heart";
+        heart.textContent = "💖";
+        heart.style.left = Math.random() * window.innerWidth + "px";
+        heart.style.fontSize = (20 + Math.random() * 20) + "px";
+        heart.style.animationDuration = (2 + Math.random() * 3) + "s";
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 6000);
+      }
+    }
+  </script>
+</body>
+</html>
