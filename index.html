@@ -50,6 +50,7 @@
       color: #fff;
       text-align: center;
       overflow: hidden;
+      position: relative;
     }
 
     h1 {
@@ -65,6 +66,7 @@
       font-weight: bold;
       margin-bottom: 40px;
       animation: wiggle 3s infinite;
+      flex-wrap: wrap;
     }
 
     .unit {
@@ -88,6 +90,8 @@
       gap: 60px;
       align-items: flex-end;
       transition: gap 1s ease;
+      position: relative;
+      z-index: 2;
     }
     .character {
       display: flex;
@@ -130,18 +134,6 @@
     .left-hand { left: 80px; }
     .right-hand { right: 80px; }
 
-    /* Hand pulse */
-    .pulse {
-      position: absolute;
-      bottom: 30px;
-      width: 25px;
-      height: 25px;
-      border-radius: 50%;
-      background: rgba(255, 0, 0, 0.5);
-      animation: pulse 1.5s infinite;
-      z-index: 1;
-    }
-
     /* Floating hearts */
     .heart {
       position: absolute;
@@ -181,21 +173,116 @@
       75% { transform: rotate(-2deg); }
     }
 
-    @keyframes pulse {
-      0% { transform: scale(1); opacity: 0.7; }
-      50% { transform: scale(1.5); opacity: 0.2; }
-      100% { transform: scale(1); opacity: 0.7; }
+    /* Sneak peek animations */
+    .teaser {
+      animation: jiggle 0.4s infinite alternate !important;
+    }
+    @keyframes jiggle {
+      from { transform: rotate(-5deg) scale(1.05); }
+      to   { transform: rotate(5deg) scale(1.05); }
+    }
+    .teaser-gap {
+      gap: 30px !important;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+    /* Plane animation */
+    #plane {
+      position: absolute;
+      top: 20%;
+      right: -100px;
+      font-size: 2.5rem;
+      display: none;
+      z-index: 5;
+    }
+    .fly {
+      display: block !important;
+      animation: flyBack 6s linear forwards;
+    }
+    @keyframes flyBack {
+      from { transform: translateX(0) rotate(-10deg); }
+      to   { transform: translateX(-120vw) rotate(10deg); }
+    }
+
+    /* Plane trail */
+    .trail {
+      position: absolute;
+      color: #fff;
+      font-size: 1.2rem;
+      opacity: 0.8;
+      animation: floatTrail 4s linear forwards;
+      pointer-events: none;
+    }
+    @keyframes floatTrail {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(-40px); }
+    }
+
+    /* Vignette */
+    .vignette {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      background: radial-gradient(circle at center, rgba(0,0,0,0) 60%, rgba(0,0,0,0.6) 100%);
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+    .vignette.show {
+      opacity: 1;
+    }
+
+    /* Flags */
+    .flag {
+      position: absolute;
+      top: 10%;
+      font-size: 2.5rem;
+      z-index: 3;
+    }
+    .flag.korea { right: 20px; }
+    .flag.turkey { left: 20px; }
+
+    /* Sneak Peek Button - redesigned */
+    #teaserBtn {
+      margin-top: 30px;
+      padding: 12px 28px;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #ff85a1, #ffb347);
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+      animation: pulseGlow 2s infinite;
+      transition: transform 0.2s, box-shadow 0.3s;
+      z-index: 3;
+    }
+    #teaserBtn:hover {
+      transform: scale(1.07);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.3);
+    }
+    @keyframes pulseGlow {
+      0%,100% { box-shadow: 0 0 10px rgba(255,150,200,0.6), 0 0 20px rgba(255,100,150,0.4); }
+      50% { box-shadow: 0 0 20px rgba(255,200,220,0.9), 0 0 40px rgba(255,120,160,0.6); }
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      h1 { font-size: 1.5rem; }
+      #countdown { font-size: 1rem; gap: 10px; }
+      .number { font-size: 1.5rem; }
+      .face { width: 70px; height: 70px; }
+      .body { width: 80px; height: 100px; }
+      .couple { gap: 30px; }
+      #teaserBtn { font-size: 1rem; padding: 10px 22px; }
+      .flag { font-size: 2rem; }
     }
   </style>
 </head>
 <body>
-    <div class="signature">Şila'm</div>
-<div class="watermark">Şila'm</div>
+  <div class="signature">Şila'm</div>
+  <div class="watermark">Şila'm</div>
 
   <h1>💖 Counting down to our day 💖</h1>
   <div id="countdown">
@@ -206,31 +293,42 @@
   </div>
 
   <div class="couple" id="couple">
-  <div class="character">
-    <div class="face">
-      <img src="photo_ben.jpeg" alt="Me" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
+    <div class="character">
+      <div class="face">
+        <img src="photo_ben.jpeg" alt="Me" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
+      </div>
+      <div class="body"></div>
+      <div class="hand left-hand"></div>
     </div>
-    <div class="body"></div>
-    <div class="hand left-hand"></div>
-  </div>
-  <!-- <div class="pulse"></div> -->
-  <div class="character">
-    <div class="face">
-      <img src="photo_silam.jpeg" alt="Her" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
+    <div class="character">
+      <div class="face">
+        <img src="photo_silam.jpeg" alt="Her" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
+      </div>
+      <div class="body"></div>
+      <div class="hand right-hand"></div>
     </div>
-    <div class="body"></div>
-    <div class="hand right-hand"></div>
   </div>
-</div>
 
-  <div class="celebration" id="celebration">
-    🎉 Huggy huggy, my love! 🎉
-  </div>
+  <!-- Sneak Peek Button -->
+  <button id="teaserBtn">✨ Sneak Peek ✨</button>
+
+  <!-- Plane -->
+  <div id="plane">✈️</div>
+
+  <!-- Flags -->
+  <div class="flag korea">🇰🇷</div>
+  <div class="flag turkey">🇹🇷</div>
+
+  <!-- Vignette -->
+  <div class="vignette" id="vignette"></div>
+
+  <div class="celebration" id="celebration">🎉 Huggy huggy, my love! 🎉</div>
 
   <script>
     const targetDate = new Date("2025-11-07T07:00:00"); 
     const couple = document.getElementById("couple");
     const celebration = document.getElementById("celebration");
+    const vignette = document.getElementById("vignette");
 
     function updateCountdown() {
       const now = new Date();
@@ -238,7 +336,7 @@
 
       if (diff <= 0) {
         celebration.style.display = "flex";
-        couple.style.gap = "0px"; // Hug effect
+        couple.style.gap = "0px"; 
         createConfetti();
         clearInterval(interval);
         return;
@@ -283,6 +381,37 @@
         setTimeout(() => heart.remove(), 6000);
       }
     }
+
+    // Sneak peek button logic
+    const teaserBtn = document.getElementById("teaserBtn");
+    const characters = document.querySelectorAll(".character");
+    const plane = document.getElementById("plane");
+
+    teaserBtn.addEventListener("click", () => {
+      characters.forEach(c => c.classList.add("teaser"));
+      couple.classList.add("teaser-gap");
+      vignette.classList.add("show");
+
+      plane.classList.add("fly");
+
+      let trailInterval = setInterval(() => {
+        const trail = document.createElement("div");
+        trail.className = "trail";
+        trail.textContent = Math.random() > 0.5 ? "💕" : "☁️";
+        trail.style.left = (plane.getBoundingClientRect().left - 20) + "px";
+        trail.style.top = (plane.getBoundingClientRect().top) + "px";
+        document.body.appendChild(trail);
+        setTimeout(() => trail.remove(), 4000);
+      }, 300);
+
+      setTimeout(() => {
+        characters.forEach(c => c.classList.remove("teaser"));
+        couple.classList.remove("teaser-gap");
+        plane.classList.remove("fly");
+        vignette.classList.remove("show");
+        clearInterval(trailInterval);
+      }, 6000);
+    });
   </script>
 </body>
 </html>
