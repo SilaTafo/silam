@@ -3,8 +3,19 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
   <title>Our Anniversary Countdown</title>
   <style>
+    :root { --fly-duration: 18s; }
+
+    body:not(.ready) header { opacity:0; }
+    body.ready header { opacity:1; transition:opacity .2s ease; }
+
+    
+
     /* Signature — back to original bottom-right */
     .signature {
       position: absolute;
@@ -40,24 +51,105 @@
     }
 
     /* Simple header for sound toggle only */
-    header { position:absolute; top:12px; left:0; right:0; display:flex; justify-content:flex-end; padding:0 12px; z-index:5; }
-    .sound-toggle{ display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px; background:rgba(255,255,255,.15); backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,.2); cursor:pointer; box-shadow:0 6px 15px rgba(0,0,0,.2); font-weight:600; color:#fff; }
-    .sound-toggle[aria-pressed="true"]{ background:rgba(0,0,0,.25); }
+    header {
+    position:absolute; top:12px; right:12px;
+    display:flex; gap:10px;
+    z-index:5;
+    }
+
+    .control-btn {
+    display:inline-flex; align-items:center; gap:6px;
+    padding:8px 14px;
+    border-radius:12px;
+    background:rgba(255,255,255,.12);
+    backdrop-filter:blur(6px);
+    border:1px solid rgba(255,255,255,.25);
+    cursor:pointer;
+    box-shadow:0 3px 6px rgba(0,0,0,.25);
+    font-weight:600; color:#fff;
+    font-size:0.9rem;
+    transition: background .2s, transform .2s;
+    }
+    .control-btn:hover { transform: scale(1.05); background:rgba(255,255,255,.2); }
+    .control-btn[aria-pressed="true"]{ background:rgba(0,0,0,.35); }
+
 
     body {
       margin: 0;
+      min-height: 100svh; 
       height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       font-family: "Poppins", sans-serif;
-      background: linear-gradient(135deg, #ff9ab1, #ffb347);
-      color: #fff;
       text-align: center;
       overflow: hidden;
       position: relative;
     }
+
+    /* Day & Night backgrounds */
+    body.day {
+        background: linear-gradient(135deg, #ff9ab1, #ffb347);
+        color: #fff;
+    }
+    body.night {
+        background: radial-gradient(circle at top, #0b0c2a, #000);
+        color: #fff;
+    }
+
+    /* Stars */
+    .star {
+    position: absolute;
+    width: 2px; height: 2px;
+    background: white;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0 !important;     /* FORCE hidden by default */
+    animation: twinkle 2s infinite alternate;
+    transition: opacity .5s ease;
+    }
+
+    body.night .star {
+    opacity: 0.8 !important;   /* FORCE visible only in night mode */
+    }
+
+    @keyframes twinkle {
+        from { opacity: 0.2; }
+        to { opacity: 1; }
+    }
+
+    /* Aurora Orbs */
+    /* Aurora Ribbons */
+    .aurora-ribbon {
+    position: absolute;
+    width: 40vw; 
+    height: 100vh;
+    top: 0;
+    left: 0;
+    background: linear-gradient(180deg, rgba(0,255,200,0.15) 0%, rgba(0,0,0,0) 80%);
+    filter: blur(80px);
+    opacity: 0;
+    pointer-events: none;
+    animation: wave 30s ease-in-out infinite alternate;
+    z-index: 0;
+    transform-origin: center;
+    transition: opacity 2s ease;
+    }
+
+    /* Only show at night */
+    body.night .aurora-ribbon {
+    opacity: 1;
+    }
+
+    /* Wavy motion */
+    @keyframes wave {
+    0%   { transform: skewX(-10deg) scaleX(1) translateX(0); }
+    50%  { transform: skewX(10deg) scaleX(1.2) translateX(5vw); }
+    100% { transform: skewX(-10deg) scaleX(1) translateX(-5vw); }
+    }
+
+
 
     h1 {
       font-size: 2rem;
@@ -76,7 +168,7 @@
     }
 
     .unit { display: flex; flex-direction: column; align-items: center; }
-    .number { font-size: 2.2rem; }
+    .number { font-size: 2.2rem; transition: transform .12s ease; }
     .label { font-size: 0.8rem; opacity: 0.85; }
 
     /* Characters */
@@ -104,8 +196,8 @@
     .teaser-gap { gap:30px !important; }
 
     /* Plane */
-    #plane { position:absolute; transform:scaleX(-1); top:20%; right:-100px; font-size:2.5rem; display:none; z-index:5; }
-    .fly { display:block !important; animation:flyBack 18s linear forwards; }
+    #plane { position:absolute; top:20%; right:-100px; font-size:2.5rem; display:none; z-index:5; }
+    .fly { display:block !important; animation:flyBack var(--fly-duration) linear forwards; }
     @keyframes flyBack { from { transform: translateX(0) rotate(-10deg); } to { transform: translateX(-120vw) rotate(10deg); } }
 
     /* Plane trail */
@@ -140,12 +232,7 @@
       .couple{ gap:18px; }
       .left-hand{ left:64px; } .right-hand{ right:64px; }
     }
-      /* Plane image styling */
-    
-      /* Plane image styling */
-    
-    header .sound-toggle + .sound-toggle{ margin-left:8px; }
-
+      
     @keyframes dance {
       0%   { transform: rotate(0deg) translateY(0); }
       20%  { transform: rotate(-10deg) translateY(-10px); }
@@ -158,6 +245,7 @@
       animation: dance 1s infinite ease-in-out;
     }
 
+
   
     .flipped-plane {
       display: inline-block;
@@ -167,16 +255,18 @@
 </style></head>
 <body>
   <!-- Sound toggle in header -->
-  <header>
-    <button id="soundToggle" class="sound-toggle" aria-pressed="false" aria-label="Toggle sound">
-      <span id="soundIcon">🔇</span> <span id="soundText">Sound OFF</span>
-    </button>
-    
-  </header>
+<header>
+  <button id="soundToggle" class="control-btn" aria-pressed="false" aria-label="Toggle sound">
+    <span id="soundIcon">🔇</span> <span id="soundText">Sound OFF</span>
+  </button>
+  <button id="modeToggle" class="control-btn" aria-label="Toggle night mode">🌙 Night Mode</button>
+</header>
+
+
 
   <!-- Signature & Watermark (original positions) -->
   <div class="signature">Şila'm</div>
-  <div class="watermark">Şila'm</div>
+  <div class="watermark" aria-hidden="true">Şila'm</div>
 
   <h1>💖 Counting down to our day 💖</h1>
   <div id="countdown" aria-live="polite" aria-atomic="true">
@@ -231,51 +321,63 @@
     const soundText = document.getElementById('soundText');
     const voiceAudio = document.getElementById('voiceAudio');
 
-    // ---- Plane image: stored or file picker, then fallback paths ----
-    const planeImgEl = document.getElementById('planeImg');
-    const planeSetBtn = document.getElementById('planeSetBtn');
-    const planeFile = document.getElementById('planeFile');
+    // Mode toggle (day/night)
+    const modeToggle = document.getElementById("modeToggle");
 
-    function applyStoredPlane(){
-      const data = localStorage.getItem('planeImageData');
-      if(data){ planeImgEl.src = data; return true; }
-      return false;
+    function setMode(night) {
+    document.body.classList.toggle("night", night);
+    document.body.classList.toggle("day", !night);
+    localStorage.setItem("nightMode", night);
+    modeToggle.textContent = night ? "☀️ Day Mode" : "🌙 Night Mode";
     }
 
-    (function loadPlane(){
-      if(!planeImgEl) return;
-      if (applyStoredPlane()) return;
-      const candidates = [
-        'plane.jpg','./plane.jpg','plane.JPG','plane.JPEG','plane.jpeg',
-        'plane.png','plane.webp','assets/plane.jpg','./assets/plane.jpg'
-      ];
-      let i = 0;
-      function tryNext(){
-        if(i >= candidates.length){ console.warn('All plane image fallbacks failed'); return; }
-        const test = new Image();
-        const src = candidates[i] + '?cb=' + Date.now();
-        test.onload = () => { planeImgEl.src = candidates[i]; };
-        test.onerror = () => { i++; tryNext(); };
-        test.src = src;
-      }
-      tryNext();
+    // Load preference OR auto-set by time
+    (function initMode(){
+    const stored = localStorage.getItem("nightMode");
+    if (stored !== null) {
+        setMode(stored === "true");
+    } else {
+        const hour = new Date().getHours();
+        setMode(hour >= 19 || hour < 7); // auto-night if after 7pm or before 7am
+    }
     })();
 
-    if (planeSetBtn && planeFile){
-      planeSetBtn.addEventListener('click', ()=> planeFile.click());
-      planeFile.addEventListener('change', (e)=>{
-        const f = e.targetfiles && e.target.files[0];
-        const file = (e.target && e.target.files) ? e.target.files[0] : null;
-        const chosen = file || f;
-        if(!chosen) return;
-        if(!chosen.type || !chosen.type.startsWith('image/')){ alert('Please choose an image'); return; }
-        const reader = new FileReader();
-        reader.onload = () => { localStorage.setItem('planeImageData', reader.result); planeImgEl.src = reader.result; };
-        reader.readAsDataURL(chosen);
-      });
-      planeImgEl.addEventListener('error', ()=>{ planeSetBtn.style.outline = '2px solid #fff'; });
+    // Toggle on click
+    modeToggle.addEventListener("click", () => {
+    const night = !document.body.classList.contains("night");
+    setMode(night);
+    });
+
+    // Generate stars (only once, they stay for both modes)
+    for (let i=0; i<100; i++) {
+    const star = document.createElement("div");
+    star.className = "star";
+    star.style.top = Math.random() * 100 + "vh";
+    star.style.left = Math.random() * 100 + "vw";
+    star.style.animationDuration = (1 + Math.random()*3) + "s";
+    document.body.appendChild(star);
     }
-    let soundOn = localStorage.getItem('soundOn') === 'true';
+
+    // Aurora Ribbons (northern lights)
+    const ribbonColors = [
+    "linear-gradient(180deg, rgba(0,255,200,0.2) 0%, rgba(0,0,0,0) 80%)",
+    "linear-gradient(180deg, rgba(200,0,255,0.2) 0%, rgba(0,0,0,0) 80%)",
+    "linear-gradient(180deg, rgba(0,150,255,0.2) 0%, rgba(0,0,0,0) 80%)"
+    ];
+
+    for (let i = 0; i < 3; i++) {
+    const ribbon = document.createElement("div");
+    ribbon.className = "aurora-ribbon";
+    ribbon.style.left = (i * 30) + "vw"; // spread ribbons across screen
+    ribbon.style.background = ribbonColors[i % ribbonColors.length];
+    ribbon.style.animationDuration = (25 + Math.random()*20) + "s";
+    document.body.appendChild(ribbon);
+    }
+
+
+
+    let storedSound = localStorage.getItem('soundOn');
+    let soundOn = storedSound !== null ? (storedSound === 'true') : true; 
     function updateSoundUI(){
       soundToggle.setAttribute('aria-pressed', String(soundOn));
       soundIcon.textContent = soundOn ? '🔊' : '🔇';
@@ -283,6 +385,7 @@
       voiceAudio.muted = !soundOn;
     }
     updateSoundUI();
+    document.body.classList.add('ready');
     soundToggle.addEventListener('click', ()=>{ soundOn = !soundOn; localStorage.setItem('soundOn', String(soundOn)); updateSoundUI(); });
     function tryPlayVoice(){ if(!soundOn) return; voiceAudio.currentTime = 0; voiceAudio.play().catch(()=>{}); }
 
@@ -308,6 +411,7 @@
       document.getElementById("hours").textContent = hours;
       document.getElementById("minutes").textContent = minutes;
       document.getElementById("seconds").textContent = seconds;
+
     }
 
     let interval = setInterval(updateCountdown, 1000);
@@ -362,13 +466,14 @@
         setTimeout(() => trail.remove(), 4000);
       }, 300);
 
+      const SNEAK_PEEK_MS = 18000;
       setTimeout(() => {
         characters.forEach(c => { c.classList.remove("teaser"); c.classList.remove("dance"); });
         couple.classList.remove("teaser-gap");
         plane.classList.remove("fly");
         vignette.classList.remove("show");
         clearInterval(trailInterval);
-      }, 18000);
+      }, SNEAK_PEEK_MS);
     });
   </script>
 </body>
