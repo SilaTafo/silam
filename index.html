@@ -5,38 +5,44 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Our Anniversary Countdown</title>
   <style>
-    /* Signature text */
-.signature {
-  position: absolute;
-  bottom: 20px;
-  right: 40px;
-  font-family: 'Brush Script MT', cursive;
-  font-size: 3rem;
-  color: #fff;
-  opacity: 0.85;
-  text-shadow: 0 0 10px rgba(255,255,255,0.6), 0 0 20px rgba(255,0,100,0.4);
-  transform: rotate(-5deg);
-  animation: glowPulse 3s infinite;
-}
+    /* Signature — back to original bottom-right */
+    .signature {
+      position: absolute;
+      bottom: 20px;
+      right: 40px;
+      font-family: 'Brush Script MT', cursive;
+      font-size: 3rem;
+      color: #fff;
+      opacity: 0.85;
+      text-shadow: 0 0 10px rgba(255,255,255,0.6), 0 0 20px rgba(255,0,100,0.4);
+      transform: rotate(-5deg);
+      animation: glowPulse 3s infinite;
+      z-index: 4;
+    }
 
-/* Glow animation */
-@keyframes glowPulse {
-  0%,100% { text-shadow: 0 0 10px rgba(255,255,255,0.6), 0 0 20px rgba(255,0,100,0.4); }
-  50% { text-shadow: 0 0 20px rgba(255,150,200,0.8), 0 0 40px rgba(255,0,100,0.6); }
-}
+    @keyframes glowPulse {
+      0%,100% { text-shadow: 0 0 10px rgba(255,255,255,0.6), 0 0 20px rgba(255,0,100,0.4); }
+      50% { text-shadow: 0 0 20px rgba(255,150,200,0.8), 0 0 40px rgba(255,0,100,0.6); }
+    }
 
-/* Optional: watermark background */
-.watermark {
-  position: absolute;
-  top: 10%;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 12rem;
-  font-family: 'Brush Script MT', cursive;
-  color: rgba(255,255,255,0.08);
-  pointer-events: none;
-  user-select: none;
-}
+    /* Optional: watermark background */
+    .watermark {
+      position: absolute;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12rem;
+      font-family: 'Brush Script MT', cursive;
+      color: rgba(255,255,255,0.08);
+      pointer-events: none;
+      user-select: none;
+      z-index: 0;
+    }
+
+    /* Simple header for sound toggle only */
+    header { position:absolute; top:12px; left:0; right:0; display:flex; justify-content:flex-end; padding:0 12px; z-index:5; }
+    .sound-toggle{ display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px; background:rgba(255,255,255,.15); backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,.2); cursor:pointer; box-shadow:0 6px 15px rgba(0,0,0,.2); font-weight:600; color:#fff; }
+    .sound-toggle[aria-pressed="true"]{ background:rgba(0,0,0,.25); }
 
     body {
       margin: 0;
@@ -50,6 +56,7 @@
       color: #fff;
       text-align: center;
       overflow: hidden;
+      position: relative;
     }
 
     h1 {
@@ -65,140 +72,114 @@
       font-weight: bold;
       margin-bottom: 40px;
       animation: wiggle 3s infinite;
+      flex-wrap: wrap;
     }
 
-    .unit {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .number {
-      font-size: 2.2rem;
-    }
-
-    .label {
-      font-size: 0.8rem;
-      opacity: 0.85;
-    }
+    .unit { display: flex; flex-direction: column; align-items: center; }
+    .number { font-size: 2.2rem; }
+    .label { font-size: 0.8rem; opacity: 0.85; }
 
     /* Characters */
-    .couple {
-      display: flex;
-      gap: 60px;
-      align-items: flex-end;
-      transition: gap 1s ease;
-    }
-    .character {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
-      animation: bounce 2s infinite;
-    }
-    .face {
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
-      border: 3px solid #000;;
-      background: #ffe1ec;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
-      color: #ff4d6d;
-      z-index: 2;
-    }
-    .body {
-      width: 100px;
-      height: 120px;
-      background: #333;
-      border-radius: 50% 50% 20% 20%;
-      margin-top: -20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .hand {
-      position: absolute;
-      bottom: 30px;
-      width: 20px;
-      height: 20px;
-      background: #ff4d6d;
-      border-radius: 50%;
-    }
-    .left-hand { left: 80px; }
-    .right-hand { right: 80px; }
+    .couple { display:flex; gap:60px; align-items:flex-end; transition: gap 1s ease; position:relative; z-index:2; }
+    .character { display:flex; flex-direction:column; align-items:center; position:relative; animation:bounce 2s infinite; }
+    .face { width:90px; height:90px; border-radius:50%; border:3px solid #000; background:#ffe1ec; display:flex; align-items:center; justify-content:center; font-size:2rem; color:#ff4d6d; z-index:2; overflow:hidden; }
+    .face img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .body { width:100px; height:120px; background:#333; border-radius:50% 50% 20% 20%; margin-top:-20px; display:flex; align-items:center; justify-content:center; }
+    .hand { position:absolute; bottom:30px; width:20px; height:20px; background:#ff4d6d; border-radius:50%; }
+    .left-hand { left:80px; } .right-hand { right:80px; }
 
-    /* Hand pulse */
-    .pulse {
-      position: absolute;
-      bottom: 30px;
-      width: 25px;
-      height: 25px;
-      border-radius: 50%;
-      background: rgba(255, 0, 0, 0.5);
-      animation: pulse 1.5s infinite;
-      z-index: 1;
-    }
-
-    /* Floating hearts */
-    .heart {
-      position: absolute;
-      color: #fff;
-      font-size: 20px;
-      animation: floatUp 4s linear infinite;
-      pointer-events: none;
-    }
-    @keyframes floatUp {
-      0% { transform: translateY(0) scale(1); opacity: 1; }
-      100% { transform: translateY(-400px) scale(1.5); opacity: 0; }
-    }
+    /* Floating hearts — REVERTED to original idle style */
+    .heart { position:absolute; color:#fff; font-size:20px; animation: floatUp 4s linear infinite; pointer-events:none; }
+    @keyframes floatUp { 0% { transform: translateY(0) scale(1); opacity:1; } 100% { transform: translateY(-400px) scale(1.5); opacity:0; } }
 
     /* Celebration */
-    .celebration {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      color: #fff;
-      font-size: 2rem;
-      z-index: 10;
-      animation: fadeIn 2s forwards;
+    .celebration { position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:none; justify-content:center; align-items:center; color:#fff; font-size:2rem; z-index:10; animation:fadeIn 2s forwards; }
+
+    @keyframes bounce { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-8px); } }
+    @keyframes wiggle { 0%,100% { transform:rotate(0deg); } 25% { transform:rotate(2deg); } 75% { transform:rotate(-2deg); } }
+
+    /* Teaser */
+    .teaser { animation:jiggle 0.4s infinite alternate !important; }
+    @keyframes jiggle { from{ transform:rotate(-5deg) scale(1.05);} to{ transform:rotate(5deg) scale(1.05);} }
+    .teaser-gap { gap:30px !important; }
+
+    /* Plane */
+    #plane { position:absolute; transform:scaleX(-1); top:20%; right:-100px; font-size:2.5rem; display:none; z-index:5; }
+    .fly { display:block !important; animation:flyBack 18s linear forwards; }
+    @keyframes flyBack { from { transform: translateX(0) rotate(-10deg); } to { transform: translateX(-120vw) rotate(10deg); } }
+
+    /* Plane trail */
+    .trail { position:absolute; color:#fff; font-size:1.2rem; opacity:0.8; animation: floatTrail 4s linear forwards; pointer-events:none; }
+    @keyframes floatTrail { from{ opacity:1; transform:translateY(0);} to{ opacity:0; transform:translateY(-40px);} }
+
+    /* Vignette */
+    .vignette { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; background: radial-gradient(circle at center, rgba(0,0,0,0) 60%, rgba(0,0,0,0.6) 100%); z-index:1; opacity:0; transition:opacity 1s ease; }
+    .vignette.show { opacity:1; }
+
+    /* Flags */
+    .flag { position:absolute; top:10%; font-size:2.5rem; z-index:3; }
+    .flag.korea { right:20px; } .flag.turkey { left:20px; }
+
+    /* Sneak Peek Button — improved */
+    #teaserBtn { margin-top: 30px; padding: 12px 28px; font-size: 1.1rem; border: none; border-radius: 999px; background: linear-gradient(135deg, #ff85a1, #ffb347); color:#fff; font-weight:bold; cursor:pointer; box-shadow:0 6px 15px rgba(0,0,0,0.2); animation:pulseGlow 2s infinite; transition: transform 0.2s, box-shadow 0.3s; z-index:3; }
+    #teaserBtn:hover { transform: scale(1.07); box-shadow: 0 8px 18px rgba(0,0,0,0.3); }
+    @keyframes pulseGlow { 0%,100% { box-shadow: 0 0 10px rgba(255,150,200,0.6), 0 0 20px rgba(255,100,150,0.4); } 50% { box-shadow: 0 0 20px rgba(255,200,220,0.9), 0 0 40px rgba(255,120,160,0.6); } }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      h1 { font-size: 1.5rem; }
+      #countdown { font-size: 1rem; gap: 10px; }
+      .number { font-size: 1.5rem; }
+      .face { width: 70px; height: 70px; }
+      .body { width: 80px; height: 100px; }
+      .couple { gap: 30px; }
+      #teaserBtn { font-size: 1rem; padding: 10px 22px; }
+      .flag { font-size: 2rem; }
+    }
+    @media (max-width: 360px){
+      .couple{ gap:18px; }
+      .left-hand{ left:64px; } .right-hand{ right:64px; }
+    }
+      /* Plane image styling */
+    
+      /* Plane image styling */
+    
+    header .sound-toggle + .sound-toggle{ margin-left:8px; }
+
+    @keyframes dance {
+      0%   { transform: rotate(0deg) translateY(0); }
+      20%  { transform: rotate(-10deg) translateY(-10px); }
+      40%  { transform: rotate(10deg) translateY(0); }
+      60%  { transform: rotate(-10deg) translateY(-10px); }
+      80%  { transform: rotate(10deg) translateY(0); }
+      100% { transform: rotate(0deg) translateY(0); }
+    }
+    .character.dance {
+      animation: dance 1s infinite ease-in-out;
     }
 
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
+  
+    .flipped-plane {
+      display: inline-block;
+      transform: scaleX(-1);
     }
 
-    @keyframes wiggle {
-      0%, 100% { transform: rotate(0deg); }
-      25% { transform: rotate(2deg); }
-      75% { transform: rotate(-2deg); }
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(1); opacity: 0.7; }
-      50% { transform: scale(1.5); opacity: 0.2; }
-      100% { transform: scale(1); opacity: 0.7; }
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-  </style>
-</head>
+</style></head>
 <body>
-    <div class="signature">Şila'm</div>
-<div class="watermark">Şila'm</div>
+  <!-- Sound toggle in header -->
+  <header>
+    <button id="soundToggle" class="sound-toggle" aria-pressed="false" aria-label="Toggle sound">
+      <span id="soundIcon">🔇</span> <span id="soundText">Sound OFF</span>
+    </button>
+    
+  </header>
+
+  <!-- Signature & Watermark (original positions) -->
+  <div class="signature">Şila'm</div>
+  <div class="watermark">Şila'm</div>
 
   <h1>💖 Counting down to our day 💖</h1>
-  <div id="countdown">
+  <div id="countdown" aria-live="polite" aria-atomic="true">
     <div class="unit"><span class="number" id="days">0</span><span class="label">Days</span></div>
     <div class="unit"><span class="number" id="hours">0</span><span class="label">Hours</span></div>
     <div class="unit"><span class="number" id="minutes">0</span><span class="label">Minutes</span></div>
@@ -206,31 +187,104 @@
   </div>
 
   <div class="couple" id="couple">
-  <div class="character">
-    <div class="face">
-      <img src="photo_ben.jpeg" alt="Me" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
+    <div class="character">
+      <div class="face"><img src="photo_ben.jpeg" alt="Me"></div>
+      <div class="body"></div>
+      <div class="hand left-hand"></div>
     </div>
-    <div class="body"></div>
-    <div class="hand left-hand"></div>
-  </div>
-  <!-- <div class="pulse"></div> -->
-  <div class="character">
-    <div class="face">
-      <img src="photo_silam.jpeg" alt="Her" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
+    <div class="character">
+      <div class="face"><img src="photo_silam.jpeg" alt="Her"></div>
+      <div class="body"></div>
+      <div class="hand right-hand"></div>
     </div>
-    <div class="body"></div>
-    <div class="hand right-hand"></div>
   </div>
-</div>
 
-  <div class="celebration" id="celebration">
-    🎉 Huggy huggy, my love! 🎉
-  </div>
+  <!-- Sneak Peek Button -->
+  <button id="teaserBtn">✨ Sneak Peek ✨</button>
+
+  <!-- Plane -->
+  <div id="plane"><span class="flipped-plane">✈️</span></div>
+
+  <!-- Flags -->
+  <div class="flag korea">🇰🇷</div>
+  <div class="flag turkey">🇹🇷</div>
+
+  <!-- Vignette -->
+  <div class="vignette" id="vignette"></div>
+
+  <div class="celebration" id="celebration">🎉 Huggy huggy, my love! 🎉</div>
+
+  <!-- Your custom voice line (replace src with your file) -->
+  <audio id="voiceAudio" preload="auto">
+    <source src="myvoice.mp3" type="audio/mpeg">
+  </audio>
 
   <script>
-    const targetDate = new Date("2025-11-07T07:00:00"); 
+    const targetDate = new Date("2025-11-07T07:00:00");
     const couple = document.getElementById("couple");
     const celebration = document.getElementById("celebration");
+    const vignette = document.getElementById("vignette");
+
+    // Sound toggle
+    const soundToggle = document.getElementById('soundToggle');
+    const soundIcon = document.getElementById('soundIcon');
+    const soundText = document.getElementById('soundText');
+    const voiceAudio = document.getElementById('voiceAudio');
+
+    // ---- Plane image: stored or file picker, then fallback paths ----
+    const planeImgEl = document.getElementById('planeImg');
+    const planeSetBtn = document.getElementById('planeSetBtn');
+    const planeFile = document.getElementById('planeFile');
+
+    function applyStoredPlane(){
+      const data = localStorage.getItem('planeImageData');
+      if(data){ planeImgEl.src = data; return true; }
+      return false;
+    }
+
+    (function loadPlane(){
+      if(!planeImgEl) return;
+      if (applyStoredPlane()) return;
+      const candidates = [
+        'plane.jpg','./plane.jpg','plane.JPG','plane.JPEG','plane.jpeg',
+        'plane.png','plane.webp','assets/plane.jpg','./assets/plane.jpg'
+      ];
+      let i = 0;
+      function tryNext(){
+        if(i >= candidates.length){ console.warn('All plane image fallbacks failed'); return; }
+        const test = new Image();
+        const src = candidates[i] + '?cb=' + Date.now();
+        test.onload = () => { planeImgEl.src = candidates[i]; };
+        test.onerror = () => { i++; tryNext(); };
+        test.src = src;
+      }
+      tryNext();
+    })();
+
+    if (planeSetBtn && planeFile){
+      planeSetBtn.addEventListener('click', ()=> planeFile.click());
+      planeFile.addEventListener('change', (e)=>{
+        const f = e.targetfiles && e.target.files[0];
+        const file = (e.target && e.target.files) ? e.target.files[0] : null;
+        const chosen = file || f;
+        if(!chosen) return;
+        if(!chosen.type || !chosen.type.startsWith('image/')){ alert('Please choose an image'); return; }
+        const reader = new FileReader();
+        reader.onload = () => { localStorage.setItem('planeImageData', reader.result); planeImgEl.src = reader.result; };
+        reader.readAsDataURL(chosen);
+      });
+      planeImgEl.addEventListener('error', ()=>{ planeSetBtn.style.outline = '2px solid #fff'; });
+    }
+    let soundOn = localStorage.getItem('soundOn') === 'true';
+    function updateSoundUI(){
+      soundToggle.setAttribute('aria-pressed', String(soundOn));
+      soundIcon.textContent = soundOn ? '🔊' : '🔇';
+      soundText.textContent = soundOn ? 'Sound ON' : 'Sound OFF';
+      voiceAudio.muted = !soundOn;
+    }
+    updateSoundUI();
+    soundToggle.addEventListener('click', ()=>{ soundOn = !soundOn; localStorage.setItem('soundOn', String(soundOn)); updateSoundUI(); });
+    function tryPlayVoice(){ if(!soundOn) return; voiceAudio.currentTime = 0; voiceAudio.play().catch(()=>{}); }
 
     function updateCountdown() {
       const now = new Date();
@@ -238,8 +292,9 @@
 
       if (diff <= 0) {
         celebration.style.display = "flex";
-        couple.style.gap = "0px"; // Hug effect
+        couple.style.gap = "0px";
         createConfetti();
+        tryPlayVoice();
         clearInterval(interval);
         return;
       }
@@ -258,7 +313,7 @@
     let interval = setInterval(updateCountdown, 1000);
     updateCountdown();
 
-    // Floating hearts
+    // Floating hearts — original idle behavior
     function createHeart() {
       const heart = document.createElement("div");
       heart.className = "heart";
@@ -283,6 +338,38 @@
         setTimeout(() => heart.remove(), 6000);
       }
     }
+
+    // Sneak peek button logic
+    const teaserBtn = document.getElementById("teaserBtn");
+    const characters = document.querySelectorAll(".character");
+    const plane = document.getElementById("plane");
+
+    teaserBtn.addEventListener("click", () => {
+      characters.forEach(c => { c.classList.add("teaser"); c.classList.add("dance"); });
+      couple.classList.add("teaser-gap");
+      vignette.classList.add("show");
+
+      plane.classList.add("fly");
+      tryPlayVoice();
+
+      let trailInterval = setInterval(() => {
+        const trail = document.createElement("div");
+        trail.className = "trail";
+        trail.textContent = Math.random() > 0.5 ? "💕" : "☁️";
+        trail.style.left = (plane.getBoundingClientRect().left - 20) + "px";
+        trail.style.top = (plane.getBoundingClientRect().top) + "px";
+        document.body.appendChild(trail);
+        setTimeout(() => trail.remove(), 4000);
+      }, 300);
+
+      setTimeout(() => {
+        characters.forEach(c => { c.classList.remove("teaser"); c.classList.remove("dance"); });
+        couple.classList.remove("teaser-gap");
+        plane.classList.remove("fly");
+        vignette.classList.remove("show");
+        clearInterval(trailInterval);
+      }, 18000);
+    });
   </script>
 </body>
 </html>
