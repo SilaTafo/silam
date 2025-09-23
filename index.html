@@ -298,6 +298,74 @@
                 0 0 45px rgba(180,120,255,0.6);
     }
 
+    /* Heart-Bowl button (bottom-left) */
+    .heart-bowl{
+    position: absolute;
+    left: 20px; 
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
+    width: 140px; height: 120px;
+    padding: 0; border: 0; background: transparent;
+    cursor: pointer; z-index: 6;
+    transform-origin: left bottom;
+    }
+    @media (max-height: 600px){
+    .heart-bowl{ transform: scale(.9); }
+    }
+    @media (max-height: 520px){
+    .heart-bowl{ transform: scale(.8); }
+    }
+    .heart-svg{ width: 100%; height: 100%; display:block; filter: drop-shadow(0 6px 18px rgba(0,0,0,.35)); }
+
+    /* Liquid fill: scale from bottom using CSS var --fill (0..1) */
+    .fill-rect{
+    transform-origin: 100px 180px;               /* bottom center of viewBox */
+    transform: scaleY(var(--fill, 0));
+    transition: transform .45s cubic-bezier(.2,.7,.2,1);
+    opacity: 1;
+    }
+    .fill-rect.night{ opacity: 0; }                /* day by default */
+    body.night .fill-rect.day{ opacity: 0; }
+    body.night .fill-rect.night{ opacity: 1; }
+
+    .heart-outline{ stroke: rgba(255,255,255,.9); }
+    body.night .heart-outline{ stroke: rgba(150,220,255,.95); filter: drop-shadow(0 0 10px rgba(120,200,255,.6)); }
+
+    /* label INSIDE the heart (centered) */
+    .heart-label{
+    position: absolute;
+    left: 50%; 
+    top: 52%;                      /* a tiny bit below visual center looks nicer */
+    transform: translate(-50%, -50%);
+    width: 90%;                    /* prevent overflow on small screens */
+    text-align: center;
+    font-weight: 700; 
+    font-size: .70rem; 
+    line-height: 1.1;
+    color: #fff;
+    pointer-events: none;          /* clicks still hit the heart button */
+    text-shadow: 
+        0 1px 2px rgba(0,0,0,.45),   /* subtle outline for readability */
+        0 0 8px rgba(0,0,0,.25);
+    -webkit-text-stroke: .3px rgba(0,0,0,.25); /* extra legibility */
+    }
+    .heart-bowl.bump .heart-label{ transform: translate(-50%,-50%) scale(1.06); transition: transform .2s ease; }
+
+
+    /* Near full: gentle anticipation glow */
+    .heart-bowl.near-full .heart-outline{ filter: drop-shadow(0 0 16px rgba(255,120,160,.7)); }
+    body.night .heart-bowl.near-full .heart-outline{ filter: drop-shadow(0 0 16px rgba(120,220,255,.8)); }
+
+    /* Explosion particles */
+    .flying-heart{
+    position: absolute; left:0; top:0; font-size: 1.2rem; pointer-events:none;
+    animation: bowlBurst 900ms ease-out forwards;
+    }
+    @keyframes bowlBurst{
+    from{ opacity:1; transform: translate(0,0) scale(1); }
+    to  { opacity:0; transform: translate(var(--dx), var(--dy)) scale(.6) rotate(20deg); }
+    }
+
+
     /* Responsive */
     @media (max-width: 600px) {
       h1 { font-size: 1.5rem; }
@@ -387,6 +455,48 @@
   <audio id="voiceAudio" preload="auto">
     <source src="myvoice.mp3" type="audio/mpeg">
   </audio>
+
+  <!-- Heart-Bowl “I miss you” (bottom-left) -->
+  <button id="heartBowl" class="heart-bowl" aria-label="I miss you" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+    <svg class="heart-svg" viewBox="0 0 200 180" aria-hidden="true">
+      <defs>
+        <!-- Gradients for day/night fill -->
+        <linearGradient id="loveGradDay" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0%"  stop-color="#ff4d6d"/>
+          <stop offset="100%" stop-color="#ff98b0"/>
+        </linearGradient>
+        <linearGradient id="loveGradNight" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0%"  stop-color="#4facfe"/>
+          <stop offset="100%" stop-color="#8e2de2"/>
+        </linearGradient>
+        <!-- Heart clip path -->
+        <clipPath id="heartClip">
+          <path d="M100 170
+                   C 90 150, 50 130, 30 100
+                   C -5  60, 25  20, 60  30
+                   C 80  35, 95  50, 100 65
+                   C 105 50, 120 35, 140 30
+                   C 175 20, 205 60, 170 100
+                   C 150 130, 110 150, 100 170 Z"/>
+        </clipPath>
+      </defs>
+
+      <!-- Liquid fill (scaled from bottom using --fill) -->
+      <rect class="fill-rect day"   x="0" y="0" width="200" height="180" clip-path="url(#heartClip)" fill="url(#loveGradDay)"/>
+      <rect class="fill-rect night" x="0" y="0" width="200" height="180" clip-path="url(#heartClip)" fill="url(#loveGradNight)"/>
+
+      <!-- Bowl outline -->
+      <path class="heart-outline" fill="none" stroke-width="6"
+            d="M100 170
+               C 90 150, 50 130, 30 100
+               C -5  60, 25  20, 60  30
+               C 80  35, 95  50, 100 65
+               C 105 50, 120 35, 140 30
+               C 175 20, 205 60, 170 100
+               C 150 130, 110 150, 100 170 Z"/>
+    </svg>
+    <span class="heart-label">I miss you ❤️</span>
+  </button>
 
   <script>
     const targetDate = new Date("2025-11-07T07:00:00");
@@ -629,6 +739,69 @@
         clearInterval(trailInterval);
       }, SNEAK_PEEK_MS);
     });
+
+    // --- Heart-Bowl logic ---
+(function heartBowlInit(){
+  const bowl = document.getElementById('heartBowl');
+  if (!bowl) return;
+
+  const svg = bowl.querySelector('.heart-svg');
+  let fill = 0; // 0..1
+
+  function applyFill(){
+    svg.style.setProperty('--fill', fill);
+    bowl.setAttribute('aria-valuenow', Math.round(fill*100));
+    bowl.classList.toggle('near-full', fill >= 0.8 && fill < 1);
+  }
+
+  function flingHearts(x, y, n=28){
+    for (let i=0; i<n; i++){
+      const p = document.createElement('div');
+      p.className = 'flying-heart';
+      p.textContent = Math.random() < .75 ? '💕' : '✨';
+      p.style.left = x + 'px';
+      p.style.top  = y + 'px';
+      const angle = Math.random()*Math.PI*2;
+      const dist  = 60 + Math.random()*140;
+      p.style.setProperty('--dx', Math.cos(angle)*dist + 'px');
+      p.style.setProperty('--dy', Math.sin(angle)*dist + 'px');
+      document.body.appendChild(p);
+      setTimeout(()=>p.remove(), 900);
+    }
+  }
+
+  function explode(){
+    const r = bowl.getBoundingClientRect();
+    const cx = r.left + r.width/2;
+    const cy = r.top  + r.height/2;
+    flingHearts(cx, cy, 30);
+    bowl.classList.remove('near-full');
+    fill = 0; applyFill();
+  }
+
+  // initial
+  applyFill();
+
+  // click to fill; +10% per click; explode at 100%
+  bowl.addEventListener('click', ()=>{
+    if (fill >= 1) return;
+    fill = Math.min(1, fill + 0.10);
+    applyFill();
+    bowl.classList.add('bump');
+    setTimeout(()=>bowl.classList.remove('bump'), 220);
+    if (fill >= 1){
+      setTimeout(explode, 140); // tiny suspense
+    }
+  });
+
+  // accessibility: Space/Enter also fill
+  bowl.addEventListener('keydown', (e)=>{
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault(); bowl.click();
+    }
+  });
+})();
+
   </script>
 </body>
 </html>
