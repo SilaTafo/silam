@@ -304,10 +304,38 @@
     left: 20px; 
     bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
     width: 70px; height: 60px;
+
     padding: 0; border: 0; background: transparent;
     cursor: pointer; z-index: 6;
     transform-origin: left bottom;
+
+    /* prevent blue/gray tap highlight & default button skin */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+
+    /* avoid accidental selection/callout on mobile */
+    -webkit-touch-callout: none;
+    user-select: none;
+
+    /* remove focus outline for mouse/touch; keep a11y ring via :focus-visible below */
+    outline: none;
     }
+
+    /* firefox legacy inner focus ring */
+    .heart-bowl::-moz-focus-inner{ border: 0; }
+
+    /* only show a ring for keyboard focus (not on taps/clicks) */
+    .heart-bowl:focus{ outline: none; }
+    .heart-bowl:focus-visible{
+    outline: 2px solid rgba(255,255,255,0.6);
+    outline-offset: 4px;
+    }
+
+    /* ensure clicks hit the button, not children */
+    .heart-bowl .heart-svg,
+    .heart-bowl .heart-label{ pointer-events: none; }
+
     @media (max-height: 600px){
     .heart-bowl{ transform: scale(.9); }
     }
@@ -339,7 +367,7 @@
     width: 90%;                    /* prevent overflow on small screens */
     text-align: center;
     font-weight: 700; 
-    font-size: .70rem; 
+    font-size: .60rem; 
     line-height: 1.1;
     color: #fff;
     pointer-events: none;          /* clicks still hit the heart button */
